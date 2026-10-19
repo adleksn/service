@@ -36,16 +36,13 @@ test('interactions: menu and cookie acknowledgement work accessibly', async ({ p
   await expect(page.locator('[data-cookie-banner]')).toBeHidden();
 });
 
-test('keeps map geometry, local direction icons, and menu focus contract', async ({ page }) => {
+test('keeps full-width map, local direction icons, and menu focus contract', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await expect(page.locator('.map-wrap iframe')).toHaveAttribute('src', /35\.78981.*56\.844633/);
   await expect(page.locator('.direction-icon').first()).toHaveAttribute('src', /^assets\/images\//);
   await page.locator('.map-wrap').scrollIntoViewIfNeeded();
-  expect(await page.locator('.map-wrap').evaluate(element => {
-    const { width, height } = element.getBoundingClientRect();
-    return Math.abs(width - height) < 1;
-  })).toBeTruthy();
+  expect(await page.locator('.map-wrap').evaluate(element => Math.abs(element.getBoundingClientRect().width - window.innerWidth) < 1)).toBeTruthy();
 
   await page.setViewportSize({ width: 375, height: 900 });
   await page.goto('/');
@@ -71,6 +68,16 @@ test('keeps reference white sections full-bleed and conditions compact', async (
   const cards = page.locator('.condition-grid article');
   await expect(cards).toHaveCount(4);
   expect(await cards.first().evaluate(element => element.getBoundingClientRect().height)).toBeLessThanOrEqual(170);
+});
+
+test('places a full-bleed map above the contacts heading', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const map = page.locator('#contacts .map-wrap');
+  const heading = page.locator('#contacts .section-heading');
+  expect(await map.evaluate(element => Math.abs(element.getBoundingClientRect().width - window.innerWidth) < 1)).toBeTruthy();
+  expect(await heading.evaluate((element, mapElement) => element.compareDocumentPosition(mapElement) & Node.DOCUMENT_POSITION_PRECEDING, await map.elementHandle())).toBeTruthy();
+  await expect(page.locator('.payment-grid article').first()).toHaveClass(/reveal-item/);
 });
 
 for (const width of [375, 768, 1024, 1440]) {

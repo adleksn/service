@@ -20,6 +20,11 @@ function initCookieConsent() {
 function initScrollReveal() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const elements = document.querySelectorAll('.reveal');
+  const staggeredItems = '.payment-grid > *, .benefit-grid > *, .family-grid > *, .condition-grid > *, .support-grid > *, .document-grid > *';
+  elements.forEach(section => section.querySelectorAll(staggeredItems).forEach((item, index) => {
+    item.classList.add('reveal-item');
+    item.style.setProperty('--reveal-delay', `${Math.min(index, 7) * 65}ms`);
+  }));
   const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('is-visible'); observer.unobserve(entry.target); } }), { threshold: 0.12 });
   elements.forEach(element => observer.observe(element));
 }
