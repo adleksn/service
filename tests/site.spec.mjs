@@ -80,6 +80,14 @@ test('places a full-bleed map above the contacts heading', async ({ page }) => {
   await expect(page.locator('.payment-grid article').first()).toHaveClass(/reveal-item/);
 });
 
+test('matches the reference composition for the Dosaaf and payment blocks', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.intro-reference-image')).toHaveAttribute('src', 'assets/images/contract-signing.jpg');
+  await expect(page.locator('#payments .payment-banner')).toBeVisible();
+  await expect(page.locator('#payments .eyebrow img')).toHaveAttribute('src', 'assets/images/frame-604.svg');
+  await expect(page.locator('.intro-copy')).not.toHaveClass(/panel/);
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -92,6 +100,7 @@ for (const width of [375, 768, 1024, 1440]) {
     for (const section of await page.locator('.reveal').all()) {
       await section.scrollIntoViewIfNeeded();
     }
+    await page.waitForTimeout(800);
     await page.screenshot({ path: `test-results/reference-${width}.png`, fullPage: true });
   });
 }
