@@ -1,0 +1,14 @@
+{
+  "name": "dosaaf-landing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "npm run test:site",
+    "test:site": "playwright test",
+    "test:visual": "playwright test --grep @visual"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}
