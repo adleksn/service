@@ -4,10 +4,10 @@ function initNavigation() {
   const toggle = select('.menu-toggle');
   const menu = select('#mobile-menu');
   if (!toggle || !menu) return;
-  const close = () => { toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'Открыть меню'); menu.hidden = true; };
+  const close = ({ restoreFocus = false } = {}) => { toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'Открыть меню'); menu.hidden = true; if (restoreFocus) toggle.focus(); };
   toggle.addEventListener('click', () => { const open = toggle.getAttribute('aria-expanded') !== 'true'; toggle.setAttribute('aria-expanded', String(open)); toggle.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню'); menu.hidden = !open; });
   menu.querySelectorAll('a').forEach(link => link.addEventListener('click', close));
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') close(); });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') close({ restoreFocus: true }); });
 }
 
 function initCookieConsent() {

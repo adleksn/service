@@ -36,6 +36,25 @@ test('interactions: menu and cookie acknowledgement work accessibly', async ({ p
   await expect(page.locator('[data-cookie-banner]')).toBeHidden();
 });
 
+test('keeps map geometry, local direction icons, and menu focus contract', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await expect(page.locator('.map-wrap iframe')).toHaveAttribute('src', /35\.78981.*56\.844633/);
+  await expect(page.locator('.direction-icon').first()).toHaveAttribute('src', /^assets\/images\//);
+  await page.locator('.map-wrap').scrollIntoViewIfNeeded();
+  expect(await page.locator('.map-wrap').evaluate(element => {
+    const { width, height } = element.getBoundingClientRect();
+    return Math.abs(width - height) < 1;
+  })).toBeTruthy();
+
+  await page.setViewportSize({ width: 375, height: 900 });
+  await page.goto('/');
+  await page.locator('.menu-toggle').click();
+  await page.getByRole('link', { name: 'Выплаты' }).last().focus();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.menu-toggle')).toBeFocused();
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
