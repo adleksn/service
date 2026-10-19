@@ -62,6 +62,17 @@ test('uses local reference imagery in the hero and directions panel', async ({ p
   await expect(page.locator('.directions-media .directions-drone')).toBeVisible();
 });
 
+test('keeps reference white sections full-bleed and conditions compact', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await expect(page.locator('#payments')).toHaveClass(/white-section/);
+  await expect(page.locator('#benefits')).toHaveClass(/white-section/);
+  await expect(page.locator('#process')).toHaveClass(/white-section/);
+  const cards = page.locator('.condition-grid article');
+  await expect(cards).toHaveCount(4);
+  expect(await cards.first().evaluate(element => element.getBoundingClientRect().height)).toBeLessThanOrEqual(170);
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
