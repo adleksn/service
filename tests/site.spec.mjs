@@ -55,6 +55,13 @@ test('keeps map geometry, local direction icons, and menu focus contract', async
   await expect(page.locator('.menu-toggle')).toBeFocused();
 });
 
+test('uses local reference imagery in the hero and directions panel', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.hero-operator')).toHaveAttribute('src', 'assets/images/operator.webp');
+  await expect(page.locator('.directions-media .directions-drone')).toHaveAttribute('src', 'assets/images/hero-drone.webp');
+  await expect(page.locator('.directions-media .directions-drone')).toBeVisible();
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
