@@ -126,6 +126,17 @@ test('renders the supplied crest and reference support-card decorations', async 
   await expect(page.locator('.document-grid article').first()).toHaveClass(/accent-top/);
 });
 
+test('keeps the complete family-support copy and the source icon treatments', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('.family-all')).toContainText('Освобождение от начисления пеней за несвоевременную оплату ЖКУ');
+  await expect(page.locator('.family-all')).toContainText('Дополнительные формы социальной поддержки в зависимости от ситуации');
+  await expect(page.locator('.family-card').nth(1)).toContainText('Приоритетное зачисление в группы продлённого дня без очереди');
+  await expect(page.locator('.family-card').nth(1).locator('.family-label img')).toHaveAttribute('src', 'assets/images/family-children.svg');
+  await expect(page.locator('.family-card').nth(2).locator('.family-label img')).toHaveAttribute('src', 'assets/images/family-parents.svg');
+  await expect(page.locator('.benefit-grid article').first()).toHaveCSS('background-image', /benefit-debt\.png/);
+});
+
 test('keeps document cards full-height and confines the star to the support card', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
