@@ -150,6 +150,15 @@ test('keeps document cards full-height and confines the star to the support card
   await expect(page.locator('.support-grid .support-arc')).toHaveCount(0);
 });
 
+test('keeps the payment background and mobile typography intact', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  expect(await page.locator('.hero-content').evaluate(element => Number.parseFloat(getComputedStyle(element).paddingTop))).toBeLessThanOrEqual(220);
+  expect(await page.locator('#process .condition-card img').first().evaluate(element => Number.parseFloat(getComputedStyle(element).width))).toBeGreaterThanOrEqual(48);
+  expect(await page.locator('#payments').evaluate(element => getComputedStyle(element, '::before').backgroundColor)).toBe('rgb(246, 243, 237)');
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
