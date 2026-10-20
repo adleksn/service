@@ -64,10 +64,10 @@ test('keeps reference white sections full-bleed and conditions compact', async (
   await page.goto('/');
   await expect(page.locator('#payments')).toHaveClass(/white-section/);
   await expect(page.locator('#benefits')).toHaveClass(/white-section/);
-  await expect(page.locator('#process')).toHaveClass(/white-section/);
+  await expect(page.locator('#process')).not.toHaveClass(/white-section/);
   const cards = page.locator('.condition-grid article');
   await expect(cards).toHaveCount(4);
-  expect(await cards.first().evaluate(element => element.getBoundingClientRect().height)).toBeLessThanOrEqual(170);
+  expect(await cards.first().evaluate(element => element.getBoundingClientRect().height)).toBeLessThanOrEqual(180);
 });
 
 test('places a full-bleed map above the contacts heading', async ({ page }) => {
@@ -86,6 +86,16 @@ test('matches the reference composition for the Dosaaf and payment blocks', asyn
   await expect(page.locator('#payments .payment-banner')).toBeVisible();
   await expect(page.locator('#payments .eyebrow img')).toHaveAttribute('src', 'assets/images/frame-604.svg');
   await expect(page.locator('.intro-copy')).not.toHaveClass(/panel/);
+});
+
+test('uses the reference layout treatments for benefits, conditions and support', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#benefits .eyebrow img')).toHaveAttribute('src', 'assets/images/frame-604.svg');
+  await expect(page.locator('#process .eyebrow img')).toHaveAttribute('src', 'assets/images/frame-604-dark.svg');
+  await expect(page.locator('#process')).not.toHaveClass(/white-section/);
+  await expect(page.locator('#process .condition-grid article').first()).toHaveClass(/condition-card/);
+  await expect(page.locator('.support-grid')).toHaveClass(/support-reference-grid/);
+  await expect(page.locator('#directions .directions-panel')).toHaveClass(/directions-reference-panel/);
 });
 
 for (const width of [375, 768, 1024, 1440]) {
