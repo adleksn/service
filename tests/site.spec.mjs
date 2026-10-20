@@ -179,6 +179,17 @@ test('switches dense reference card grids to one readable column on phones', asy
   expect(await page.locator('.family-reference-grid .family-card').first().evaluate(element => getComputedStyle(element).display)).toBe('flex');
 });
 
+test('aligns the first family card with the mobile children card', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto('/');
+
+  const allFamilyLabel = page.locator('.family-card.family-all .family-label');
+  const childrenLabel = page.locator('.family-card').nth(1).locator('.family-label');
+  const allFamilyLeft = await allFamilyLabel.evaluate(element => element.getBoundingClientRect().left);
+  const childrenLeft = await childrenLabel.evaluate(element => element.getBoundingClientRect().left);
+  expect(Math.abs(allFamilyLeft - childrenLeft)).toBeLessThanOrEqual(1);
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
