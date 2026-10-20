@@ -184,6 +184,23 @@ test('uses mobile-specific natural line wrapping in support, benefits and family
   expect(await page.locator('.support-reference-grid h3').first().evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(20);
 });
 
+test('keeps reference-card copy on whole-word boundaries at every breakpoint', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+
+  for (const selector of [
+    '#benefits .benefit-grid h3',
+    '.support-reference-grid h3',
+    '.family-reference-grid h3',
+    '.family-reference-grid p',
+    '.family-reference-grid li'
+  ]) {
+    const style = await page.locator(selector).first().evaluate(element => getComputedStyle(element));
+    expect(style.overflowWrap).toBe('normal');
+    expect(style.wordBreak).toBe('normal');
+  }
+});
+
 test('switches dense reference card grids to one readable column on phones', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 667 });
   await page.goto('/');
