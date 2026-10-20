@@ -184,6 +184,25 @@ test('uses mobile-specific natural line wrapping in support, benefits and family
   expect(await page.locator('.support-reference-grid h3').first().evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(20);
 });
 
+test('preserves spaces when mobile styles hide reference-card line breaks', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto('/');
+
+  const copy = [
+    ['#benefits .benefit-grid article:nth-child(3) h3', 'Кредитные и налоговые каникулы'],
+    ['#benefits .benefit-grid article:nth-child(4) h3', 'Приостановление судебных производств'],
+    ['.family-reference-grid .family-card:nth-child(3) p', 'Забота и поддержка для старшего поколения'],
+    ['.support-reference-grid article:nth-child(1) h3', 'Проживание и питание на период оформления'],
+    ['.support-reference-grid article:nth-child(2) h3', 'Сопровождение при прохождении всех этапов'],
+    ['.support-reference-grid article:nth-child(3) h3', 'Оплата проезда до пункта отбора после подписания контракта'],
+    ['.support-reference-grid article:nth-child(4) h3', 'Консультация по условиям службы']
+  ];
+
+  for (const [selector, expected] of copy) {
+    await expect(page.locator(selector)).toHaveText(expected);
+  }
+});
+
 test('keeps reference-card copy on whole-word boundaries at every breakpoint', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
