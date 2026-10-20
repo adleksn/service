@@ -28,8 +28,8 @@ test('shows both requested locations and the completed directions list', async (
   await expect(page.locator('#directions h3.direction-city')).toContainText('Белгород, Воронеж, Мариуполь, Луганск, Донецк, Мелитополь.');
   await expect(page.locator('#directions .directions-list')).toContainText('МОГ (Мобильная огневая группа)');
   await expect(page.locator('#contacts .contacts-map-grid .map-wrap')).toHaveCount(2);
-  await expect(page.getByText('ДОСААФ: г. Тверь, ул. Склизкова 21')).toBeVisible();
-  await expect(page.getByText('Военкомат (Отборный пункт по контракту): г. Тверь, ул. Игоря Баталова, 2')).toBeVisible();
+  await expect(page.getByText('ДОСААФ по Тверской обл')).toBeVisible();
+  await expect(page.getByText('Военкомат Тверской обл')).toBeVisible();
   await expect(page.locator('.header-phone')).toHaveCSS('font-size', '34px');
   expect(await page.locator('#directions .direction-city').evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(30);
 });
