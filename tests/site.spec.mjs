@@ -115,15 +115,27 @@ test('provides the requested hover and reference card treatments', async ({ page
   await expect(page.locator('.support-grid .support-image')).toHaveClass(/support-wide/);
 });
 
-test('renders the supplied crest and outlined support-card decorations', async ({ page }) => {
+test('renders the supplied crest and reference support-card decorations', async ({ page }) => {
   await page.goto('/');
 
   await expect(page.locator('#benefits .benefit-crest')).toHaveAttribute('data-watermark', 'gerb');
   await expect(page.locator('.family-all .family-crest-mark')).toHaveAttribute('src', 'assets/images/gerb.png');
-  await expect(page.locator('.support-grid article').first()).toHaveClass(/support-star/);
-  await expect(page.locator('.support-grid article').nth(2)).toHaveClass(/support-arc/);
-  await expect(page.locator('.support-grid article').nth(3)).toHaveClass(/support-arc/);
+  await expect(page.locator('.support-grid article').first()).not.toHaveClass(/support-star|support-arc/);
+  await expect(page.locator('.support-grid article').nth(1)).toHaveClass(/support-star/);
+  await expect(page.locator('.support-grid .support-arc')).toHaveCount(0);
   await expect(page.locator('.document-grid article').first()).toHaveClass(/accent-top/);
+});
+
+test('keeps document cards full-height and confines the star to the support card', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+
+  const documentCards = page.locator('.document-grid article');
+  expect(await documentCards.first().evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(200);
+  expect(await documentCards.nth(1).evaluate(element => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(200);
+  await expect(page.locator('.support-grid article').first()).not.toHaveClass(/support-star/);
+  await expect(page.locator('.support-grid article').nth(1)).toHaveClass(/support-star/);
+  await expect(page.locator('.support-grid .support-arc')).toHaveCount(0);
 });
 
 for (const width of [375, 768, 1024, 1440]) {
