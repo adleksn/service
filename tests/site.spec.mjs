@@ -135,6 +135,7 @@ test('keeps the complete family-support copy and the source icon treatments', as
   await expect(page.locator('.family-card').nth(1).locator('.family-label img')).toHaveAttribute('src', 'assets/images/family-children.svg');
   await expect(page.locator('.family-card').nth(2).locator('.family-label img')).toHaveAttribute('src', 'assets/images/family-parents.svg');
   await expect(page.locator('.benefit-grid article').first()).toHaveCSS('background-image', /benefit-debt\.png/);
+  expect(await page.locator('.family-all').evaluate(element => getComputedStyle(element, '::after').backgroundImage)).toContain('gerb.png');
 });
 
 test('keeps document cards full-height and confines the star to the support card', async ({ page }) => {
