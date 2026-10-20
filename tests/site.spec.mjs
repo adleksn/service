@@ -115,6 +115,17 @@ test('provides the requested hover and reference card treatments', async ({ page
   await expect(page.locator('.support-grid .support-image')).toHaveClass(/support-wide/);
 });
 
+test('renders the supplied crest and outlined support-card decorations', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.locator('#benefits .benefit-crest')).toHaveAttribute('data-watermark', 'gerb');
+  await expect(page.locator('.family-all .family-crest-mark')).toHaveAttribute('src', 'assets/images/gerb.png');
+  await expect(page.locator('.support-grid article').first()).toHaveClass(/support-star/);
+  await expect(page.locator('.support-grid article').nth(2)).toHaveClass(/support-arc/);
+  await expect(page.locator('.support-grid article').nth(3)).toHaveClass(/support-arc/);
+  await expect(page.locator('.document-grid article').first()).toHaveClass(/accent-top/);
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
