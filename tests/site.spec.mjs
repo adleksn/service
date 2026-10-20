@@ -14,11 +14,23 @@ test('renders approved content changes without removed sections', async ({ page 
   await expect(page.getByText('Ремонтный батальон')).toBeVisible();
   await expect(page.getByText('ИСР (инженерно-сапёрная рота)')).toBeVisible();
   await expect(page.getByRole('link', { name: '+7 (965) 057 23 97' }).first()).toBeVisible();
-  await expect(page.getByText('улица Игоря Баталова, 2')).toBeVisible();
+  await expect(page.getByText('г. Тверь, ул. Игоря Баталова, 2')).toBeVisible();
   await expect(page.getByText('Ответы на часто задаваемые вопросы')).toHaveCount(0);
   await expect(page.getByText('Сотрудничество c рекрутинговыми партнёрами')).toHaveCount(0);
   await expect(page.locator('.support-grid article').first()).toContainText('[ 01 ]');
   await expect(page.locator('.support-grid article').first()).toContainText('Проживание и питание');
+});
+
+test('shows both requested locations and the completed directions list', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+
+  await expect(page.locator('#directions h3.direction-city')).toContainText('Белгород, Воронеж, Мариуполь, Луганск, Донецк, Мелитополь.');
+  await expect(page.locator('#directions .directions-list')).toContainText('МОГ (Мобильная огневая группа)');
+  await expect(page.locator('#contacts .contacts-map-grid .map-wrap')).toHaveCount(2);
+  await expect(page.getByText('ДОСААФ: г. Тверь, ул. Склизкова 21')).toBeVisible();
+  await expect(page.getByText('Военкомат (Отборный пункт по контракту): г. Тверь, ул. Игоря Баталова, 2')).toBeVisible();
+  await expect(page.locator('.header-phone')).toHaveCSS('font-size', '34px');
 });
 
 test('interactions: menu and cookie acknowledgement work accessibly', async ({ page }) => {
@@ -36,13 +48,14 @@ test('interactions: menu and cookie acknowledgement work accessibly', async ({ p
   await expect(page.locator('[data-cookie-banner]')).toBeHidden();
 });
 
-test('keeps full-width map, local direction icons, and menu focus contract', async ({ page }) => {
+test('keeps the two location maps, local direction icons, and menu focus contract', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  await expect(page.locator('.map-wrap iframe')).toHaveAttribute('src', /35\.78981.*56\.844633/);
+  await expect(page.locator('.map-wrap iframe').nth(1)).toHaveAttribute('src', /35\.78981.*56\.844633/);
+  await expect(page.locator('.contacts-map-grid .map-wrap')).toHaveCount(2);
   await expect(page.locator('.direction-icon').first()).toHaveAttribute('src', /^assets\/images\//);
-  await page.locator('.map-wrap').scrollIntoViewIfNeeded();
-  expect(await page.locator('.map-wrap').evaluate(element => Math.abs(element.getBoundingClientRect().width - window.innerWidth) < 1)).toBeTruthy();
+  await page.locator('.map-wrap').first().scrollIntoViewIfNeeded();
+  expect(await page.locator('.map-wrap').first().evaluate(element => Math.abs(element.getBoundingClientRect().width - element.getBoundingClientRect().height) < 1)).toBeTruthy();
 
   await page.setViewportSize({ width: 375, height: 900 });
   await page.goto('/');
@@ -70,12 +83,13 @@ test('keeps reference white sections full-bleed and conditions compact', async (
   expect(await cards.first().evaluate(element => element.getBoundingClientRect().height)).toBeLessThanOrEqual(180);
 });
 
-test('places a full-bleed map above the contacts heading', async ({ page }) => {
+test('places two square maps above the contacts heading', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
-  const map = page.locator('#contacts .map-wrap');
+  const map = page.locator('#contacts .map-wrap').first();
   const heading = page.locator('#contacts .section-heading');
-  expect(await map.evaluate(element => Math.abs(element.getBoundingClientRect().width - window.innerWidth) < 1)).toBeTruthy();
+  await expect(page.locator('#contacts .contacts-map-grid .map-wrap')).toHaveCount(2);
+  expect(await map.evaluate(element => Math.abs(element.getBoundingClientRect().width - element.getBoundingClientRect().height) < 1)).toBeTruthy();
   expect(await heading.evaluate((element, mapElement) => element.compareDocumentPosition(mapElement) & Node.DOCUMENT_POSITION_PRECEDING, await map.elementHandle())).toBeTruthy();
   await expect(page.locator('.payment-grid article').first()).toHaveClass(/reveal-item/);
 });
