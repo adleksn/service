@@ -98,6 +98,23 @@ test('uses the reference layout treatments for benefits, conditions and support'
   await expect(page.locator('#directions .directions-panel')).toHaveClass(/directions-reference-panel/);
 });
 
+test('provides the requested hover and reference card treatments', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+
+  const cta = page.getByRole('link', { name: 'Узнать условия и выплаты' }).first();
+  const before = await cta.evaluate(element => getComputedStyle(element).transform);
+  await cta.hover();
+  await expect.poll(() => cta.evaluate(element => getComputedStyle(element).transform)).not.toBe(before);
+
+  await expect(page.locator('#directions .directions-list li').first()).toHaveClass(/direction-role/);
+  await expect(page.locator('#benefits .benefit-grid article').first()).toHaveClass(/benefit-dark/);
+  await expect(page.locator('.family-grid')).toHaveClass(/family-reference-grid/);
+  await expect(page.locator('.document-layout')).toBeVisible();
+  await expect(page.locator('.document-visual img')).toBeVisible();
+  await expect(page.locator('.support-grid .support-image')).toHaveClass(/support-wide/);
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });

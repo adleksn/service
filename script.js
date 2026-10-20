@@ -29,4 +29,15 @@ function initScrollReveal() {
   elements.forEach(element => observer.observe(element));
 }
 
-document.addEventListener('DOMContentLoaded', () => { initNavigation(); initCookieConsent(); initScrollReveal(); });
+function initHeaderTone() {
+  const header = select('.site-header');
+  const lightSections = document.querySelectorAll('.white-section');
+  if (!header || !lightSections.length) return;
+  const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) document.body.classList.toggle('section-light', entry.target.classList.contains('white-section'));
+  }), { rootMargin: `-${header.offsetHeight}px 0px -72%`, threshold: 0 });
+  lightSections.forEach(section => observer.observe(section));
+  document.querySelectorAll('#process, .support, .document-layout').forEach(section => observer.observe(section));
+}
+
+document.addEventListener('DOMContentLoaded', () => { initNavigation(); initCookieConsent(); initScrollReveal(); initHeaderTone(); });
