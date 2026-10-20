@@ -159,6 +159,16 @@ test('keeps the payment background and mobile typography intact', async ({ page 
   expect(await page.locator('#payments').evaluate(element => getComputedStyle(element, '::before').backgroundColor)).toBe('rgb(246, 243, 237)');
 });
 
+test('uses mobile-specific natural line wrapping in support, benefits and family cards', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+
+  for (const selector of ['.support-reference-grid h3 br', '#benefits .benefit-grid h3 br', '.family-reference-grid p br']) {
+    expect(await page.locator(selector).first().evaluate(element => getComputedStyle(element).display)).toBe('none');
+  }
+  expect(await page.locator('.support-reference-grid h3').first().evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(20);
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
