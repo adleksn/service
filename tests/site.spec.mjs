@@ -169,6 +169,16 @@ test('uses mobile-specific natural line wrapping in support, benefits and family
   expect(await page.locator('.support-reference-grid h3').first().evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(20);
 });
 
+test('switches dense reference card grids to one readable column on phones', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 667 });
+  await page.goto('/');
+
+  for (const selector of ['#benefits .benefit-grid', '.support-reference-grid', '.family-reference-grid .family-card']) {
+    expect(await page.locator(selector).first().evaluate(element => getComputedStyle(element).gridTemplateColumns)).not.toMatch(/\s/);
+  }
+  expect(await page.locator('.family-reference-grid .family-card').first().evaluate(element => getComputedStyle(element).display)).toBe('flex');
+});
+
 for (const width of [375, 768, 1024, 1440]) {
   test(`@visual layout has no horizontal overflow at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
